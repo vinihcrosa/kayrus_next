@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import { Button, Col, Container, Modal, Row } from 'react-bootstrap'
 import axios from 'axios'
 
-const api = axios.create({baseURL:"http://localhost:3000"})
+const api = axios.create({baseURL:process.env.REACT_APP_BACK})
 
 function MyVerticallyCenteredModal(props) {
   const { name, faculdade, uf, email, contacts} = props
