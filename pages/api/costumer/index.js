@@ -6,7 +6,7 @@ export  default async function Costumer(req, res){
   
     console.log(rows)
   
-    return res.send(rows)
+    return res.send(rows[0])
   }catch(err){
     console.log(err)
     return res.status(400).send(err)
