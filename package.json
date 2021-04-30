@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/vinihcrosa/kayrus_next#readme",
   "dependencies": {
+    "@material-ui/core": "^4.11.4",
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
     "dotenv": "^8.2.0",
