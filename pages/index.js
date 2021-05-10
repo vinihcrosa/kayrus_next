@@ -1,83 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'
-import { Button, Col, Container, Modal, Row } from 'react-bootstrap'
 import axios from 'axios'
 
 const api = axios.create({baseURL:process.env.REACT_APP_BACK})
 
-function MyVerticallyCenteredModal(props) {
-  const { name, faculdade, uf, email, contacts} = props
-  return (
-    <Modal
-      {...props}
-      size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
-    >
-      <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
-          Cliente KayrusHub
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <h4>Cliente</h4>
-        <p>
-          {name} <br/>
-          {faculdade}
-          {uf}<br/>
-          {contacts.map((c) =>(<>{c}<br/></>))}<br/>
-        </p>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button onClick={props.onHide}>Close</Button>
-      </Modal.Footer>
-    </Modal>
-  );
-}
-
 export default function GetCostumer() {
-  const [modalShow, setModalShow] = useState(false);
-  const [name, setName] = useState('');
-  const [faculdade, setFaculdade] = useState('');
-  const [uf, setUf] = useState('');
-  const [contacts, setContacts] = useState([]);
+  const [lead, setLead] = useState({
+    name: null,
+    cpf: null,
+    faculdade: null,
+    uf: null,
+    isValid: null,
+    madeContact: null,
+    emails: [],
+    telefones: []
+  })
+  const [isValid, setIsValid] = useState(true);
+  const [madeContact, setMadeContact] = useState(false);
+  const [updated, setUpdated] = useState(false);
 
-  async function handleGet(){
-    try{
-      const costumer = await api.get('/api/costumer',
-      )
-      console.log(costumer)
-      setName(costumer.data.name);
-      setFaculdade(costumer.data.faculdade);
-      setUf(costumer.data.uf);
-      setContacts(costumer.data.contacts);
-      setModalShow(true)
-    }catch(error){
-      console.log("erro do caralho", error)
-    }
+  useEffect(async () => {
+    const newLead = await api.get('/api/costumer');
+    setLead(newLead.data)
+    console.log("lead- ----> ", lead)
+  }, [updated])
+
+  function handleIsValid(event){
+    setIsValid(event.target.checked);
   }
 
- 
+  function handleMadeContact(event){
+    setMadeContact(event.target.checked);
+  }
+
+  function handleUpdate(){
+    api.put('/api/lead', {isValid, madeContact, leadId: lead.id})
+    setUpdated(!updated)
+  }
 
   return (
-    <>
-    <Container>
-      <Row>
-        <Col className="md-auto">
-          <Button className="btn-block btn-dark p-3 col-md-auto m-5" onClick={handleGet}>
-            Get
-            </Button>
-        </Col>
-      </Row>
-      <MyVerticallyCenteredModal
-        show={modalShow}
-        onHide={() => setModalShow(false)}
-        name={name}
-        faculdade={faculdade}
-        uf={uf}
-        contacts={contacts}
-      />
-    </Container>
-    </>
+    <div className="container">
+      
+      <h1>Nome: {lead.name}</h1>
+      {<h1>UF: {lead.uf}</h1>}
+      {lead.emails.map((email, index) => (<h1 key={index}>email {index + 1}: {email} </h1>))}
+      {lead.telefones.map((tel, index) => (<h1 key={index}>telefone {index + 1}: {tel} </h1>))}
+      <div className="form-check h1">
+        <label for="isValid" className="form-check-label h1">Usuário é valido? </label>
+        <input name="isValid" className="checkbox h1" type="checkbox" onChange={handleIsValid}/><br />
+      </div>
+      <div className="form-check h1">
+        <label for="madeContact" className="form-check-label h1"{...isValid?"checked":""}>Foi feito o contato? </label>
+        <input name="madeContact" className="checkbox " type="checkbox" onChange={handleMadeContact} /><br />
+      </div>
+      <button onClick={handleUpdate}>Salvar e ir para o Próximo</button>
+    </div>
     )
 }

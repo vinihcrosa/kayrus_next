@@ -2,7 +2,7 @@ import db from '../../../config/database'
 
 export  default async function Costumer(req, res){
   try{
-    const { rows } = await db.query(`SELECT * FROM costumer WHERE "madeContact" = false and "contacts" is not null ORDER BY random() LIMIT 1`, [])
+    const { rows } = await db.query(`SELECT * FROM "Lead" WHERE "madeContact" = false and "isValid" = true and "telefones" is not null ORDER BY random() LIMIT 1`, [])
   
     console.log(rows)
   
